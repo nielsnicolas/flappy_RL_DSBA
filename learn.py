@@ -5,6 +5,9 @@ import os
 import argparse
 import pickle
 
+# importing pandas as pd  
+import pandas as pd  
+
 import numpy as np
 from numpy import convolve
 import matplotlib.pyplot as plt
@@ -38,7 +41,7 @@ BACKGROUND = [288, 512]
 
 
 def main():
-    global HITMASKS, ITERATIONS, VERBOSE, bot, list_scoring, success_rates
+    global HITMASKS, ITERATIONS, VERBOSE, bot, list_scoring, success_rates, one_digits_list, two_digits_list, three_digits_list, more_than_four_digits_list
 
     parser = argparse.ArgumentParser("learn.py")
     parser.add_argument("--iter", type=int, default=1000, help="number of iterations to run")
@@ -51,6 +54,10 @@ def main():
 
     list_scoring = []
     success_rates = []
+    one_digits_list = []
+    two_digits_list = []
+    three_digits_list = [] 
+    more_than_four_digits_list = []
 
     # load dumped HITMASKS
     with open("data/hitmasks_data.pkl", "rb") as input:
@@ -63,6 +70,11 @@ def main():
         showGameOverScreen(crashInfo)
         list_scoring.append(score)
         success_rates.append(sum(list_scoring)/(sum(list_scoring)+bot.gameCNT))
+        one_digits_list.append((sum(1 for i in list_scoring if i <10)/bot.gameCNT)*100)
+        two_digits_list.append((sum(1 for i in list_scoring if i >=10 and i<100)/bot.gameCNT)*100)
+        three_digits_list.append((sum(1 for i in list_scoring if i >=100 and i<1000)/bot.gameCNT)*100)
+        more_than_four_digits_list.append((sum(1 for i in list_scoring if i >=1000)/bot.gameCNT)*100)
+
 
 
 def showWelcomeAnimation():
@@ -138,6 +150,7 @@ def mainGame(movementInfo):
         if crashTest[0]:
             # Update the q scores
             bot.update_scores(dump_qvalues=False)
+            #bot.update_scores(dump_qvalues=False, dump_scores=False)
 
             return {
                 "y": playery,
@@ -203,52 +216,66 @@ def showGameOverScreen(crashInfo):
     if bot.gameCNT == (ITERATIONS):
         print('the avegare score is',sum(list_scoring)/bot.gameCNT,'during those',ITERATIONS,'games')
         print('the max score is',max(list_scoring),'during those',ITERATIONS,'games')
-        print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i <10),'games scored single-digits-numbers and they represent',(sum(1 for i in list_scoring if i <10)/bot.gameCNT)*100,'%')
-        print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i >=10 and i<100),'games scored 2-digits-numbers and they represent',(sum(1 for i in list_scoring if i >=10 and i<100)/bot.gameCNT)*100,'%')
-        print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i >=100 and i<1000),'games scored 3-digits-numbers and they represent',(sum(1 for i in list_scoring if i >=100 and i<1000)/bot.gameCNT)*100,'%')
-        print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i >=1000),'games scored more than 4-digits-numbers and they represent',(sum(1 for i in list_scoring if i >=1000)/bot.gameCNT)*100,'%')
-        print(list_scoring)
-        print(success_rates)
+        #print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i <10),'games scored single-digits-numbers and they represent',(sum(1 for i in list_scoring if i <10)/bot.gameCNT)*100,'%')
+        #print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i >=10 and i<100),'games scored 2-digits-numbers and they represent',(sum(1 for i in list_scoring if i >=10 and i<100)/bot.gameCNT)*100,'%')
+        #print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i >=100 and i<1000),'games scored 3-digits-numbers and they represent',(sum(1 for i in list_scoring if i >=100 and i<1000)/bot.gameCNT)*100,'%')
+        #print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i >=1000),'games scored more than 4-digits-numbers and they represent',(sum(1 for i in list_scoring if i >=1000)/bot.gameCNT)*100,'%')
+        #print(list_scoring)
+        #print(success_rates)
+  
+        # dictionary of lists  
+        dict_for_pd = {'the scores': list_scoring, 'sucess rate': success_rates, 'one digit scores': one_digits_list, 'two digits scores': two_digits_list, 'three digits scores': three_digits_list, 'four and more digits scores': more_than_four_digits_list}  
+    
+        df = pd.DataFrame(dict_for_pd) 
+        print(df.tail())
+        df.to_csv('our_results.csv')
 
 
+        x = list(range(bot.gameCNT-1))
 
-        x1 = list(range(bot.gameCNT-1))
         y1 = list_scoring
-
-        x2 = list(range(bot.gameCNT-1))
         y2 = success_rates
+        y3 = one_digits_list 
+        y4 = two_digits_list 
+        y5 = three_digits_list 
+        y6 = more_than_four_digits_list 
+
 
 
         # Calculate the simple average of the data
-        y_mean = [np.mean(y1)]*len(x1)
+        y_mean = [np.mean(y1)]*len(x)
 
-        fig, (ax1, ax2) = plt.subplots(2)
+        fig, (ax1, ax2, ax3) = plt.subplots(3)
 
         # Plot the moving average line
         yMA = movingaverage(y1,100)
 
-        ax1.plot(x1,yMA, label='Moving Avegare (window=100)', linestyle='-', color='b')
-        ax1.scatter(x1, y1, s=2, c='gray')
+        ax1.plot(x,yMA, label='Moving Avegare (window=100)', linestyle='-', color='b')
+        ax1.scatter(x, y1, s=2, c='gray')
         ax1.set_title('score per game')
         ax1.axhline(y=100,color='red',linestyle='-.', lw=0.5)
         ax1.axhline(y=500,color='red',linestyle='-', lw=1)
 
 
-        ax2.plot(x2, y2)
+        ax2.plot(x, y2)
         ax2.set_title('evolution of success rate')
         ax2.axhline(y=1,color='red',linestyle='-.', lw=0.5)
 
 
+        ax3.plot(x, y3, label='proportion of 1-digits scores')
+        ax3.plot(x, y4, label='proportion of 2-digits scores')
+        ax3.plot(x, y5, label='proportion of 3-digits scores')
+        ax3.plot(x, y6, label='proportion of 4-digits and beyond scores')
+
+
         # Make a legend
         ax1.legend(loc='upper left')
+        ax3.legend(loc='upper left')
 
         plt.show()
 
         bot.dump_qvalues(force=True)
         sys.exit()
-
-
-
 
 
 

@@ -12,7 +12,7 @@ class Bot(object):
         self.gameCNT = 0  # Game count of current run, incremented after every death
         self.DUMPING_N = 25  # Number of iterations to dump Q values to JSON after
         self.discount = 1.0
-        self.r = {0: 1, 1: -1000}  # Reward function
+        self.r = {0: 1, 1: -750, 2:-1000}  # Reward function
         self.lr = 0.7
         self.load_qvalues()
         self.last_state = "420_240_0"
@@ -30,6 +30,7 @@ class Bot(object):
             return
         self.qvalues = json.load(fil)
         fil.close()
+           
 
     def act(self, xdif, ydif, vel):
         """
@@ -50,7 +51,7 @@ class Bot(object):
             self.last_action = 1
             return 1
 
-    def update_scores(self, dump_qvalues=True):
+    def update_scores(self, dump_qvalues=True, dump_scores=True):
         """
         Update qvalues via iterating over experiences
         """
@@ -70,7 +71,7 @@ class Bot(object):
             if t == 1 or t == 2:
                 cur_reward = self.r[1]
             elif high_death_flag and act:
-                cur_reward = self.r[1]
+                cur_reward = self.r[2]
                 high_death_flag = False
             else:
                 cur_reward = self.r[0]
@@ -85,6 +86,7 @@ class Bot(object):
         if dump_qvalues:
             self.dump_qvalues()  # Dump q values (if game count % DUMPING_N == 0)
         self.moves = []  # clear history after updating strategies
+        
 
     def map_state(self, xdif, ydif, vel):
         """
