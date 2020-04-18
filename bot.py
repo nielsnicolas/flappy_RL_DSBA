@@ -78,8 +78,8 @@ class Bot(object):
                 cur_reward = self.r[0]
 
             # Update
-            self.qvalues[state][act] = (1-lr_decaying()) * (self.qvalues[state][act]) + \
-                                       lr_decaying() * ( cur_reward + self.discount*max(self.qvalues[res_state]) )
+            self.qvalues[state][act] = (1-self.lr_decaying(self.lr, self.lr_decay)) * (self.qvalues[state][act]) + \
+                                       self.lr_decaying(self.lr, self.lr_decay) * ( cur_reward + self.discount*max(self.qvalues[res_state]) )
 
             t += 1
 
@@ -124,7 +124,7 @@ class Bot(object):
         decreases learning rate every dumping_n games
         """
         if self.gameCNT % self.DUMPING_N == 0 or force:
-            self.lr = max(self.lr-self.lr_decaying, 0.1)
+            self.lr = max(self.lr-self.lr_decay, 0.1)
             
         return self.lr
     
