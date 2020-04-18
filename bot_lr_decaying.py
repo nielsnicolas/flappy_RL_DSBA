@@ -14,6 +14,7 @@ class Bot(object):
         self.discount = 1.0
         self.r = {0: 1, 1: -750, 2:-1000}  # Reward function
         self.lr = 0.8
+        self.lr_decay = 0.01
         self.load_qvalues()
         self.last_state = "420_240_0"
         self.last_action = 0
@@ -51,7 +52,7 @@ class Bot(object):
             self.last_action = 1
             return 1
 
-    def update_scores(self, dump_qvalues=True, dump_scores=True):
+    def update_scores(self, dump_qvalues=True, dump_scores=True, lr_decaying=True):
         """
         Update qvalues via iterating over experiences
         """
@@ -119,3 +120,11 @@ class Bot(object):
             json.dump(self.qvalues, fil)
             fil.close()
             print("Q-values updated on local file.")
+    
+    def lr_decaying(self, force=False):
+        """
+        decreases learning rate every dumping_n games
+        """
+        if self.gameCNT % self.DUMPING_N == 0 or force :
+            self.lr = self.lr-self.lr_decay
+        

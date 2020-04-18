@@ -149,7 +149,7 @@ def mainGame(movementInfo):
         )
         if crashTest[0]:
             # Update the q scores
-            bot.update_scores(dump_qvalues=False)
+            bot.update_scores(dump_qvalues=False, lr_decaying = False)
             #bot.update_scores(dump_qvalues=False, dump_scores=False)
 
             return {
@@ -223,12 +223,14 @@ def showGameOverScreen(crashInfo):
         #print(list_scoring)
         #print(success_rates)
   
+        print(bot.lr)
+        
         # dictionary of lists  
         dict_for_pd = {'the scores': list_scoring, 'sucess rate': success_rates, 'one digit scores': one_digits_list, 'two digits scores': two_digits_list, 'three digits scores': three_digits_list, 'four and more digits scores': more_than_four_digits_list}  
     
         df = pd.DataFrame(dict_for_pd) 
         print(df.tail())
-        df.to_csv('our_results_lr_test.csv')
+        df.to_csv('our_results_lr_08.csv')
 
         
         x = list(range(bot.gameCNT-1))
@@ -274,6 +276,7 @@ def showGameOverScreen(crashInfo):
 
         plt.show()
         
+        bot.lr_decaying(force=True)
         bot.dump_qvalues(force=True)
         sys.exit()
 
