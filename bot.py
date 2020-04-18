@@ -13,7 +13,8 @@ class Bot(object):
         self.DUMPING_N = 25  # Number of iterations to dump Q values to JSON after
         self.discount = 1.0
         self.r = {0: 1, 1: -750, 2:-1000}  # Reward function
-        self.lr = 0.7
+        self.lr = 0.8
+        self.lr_decay = 0.001
         self.load_qvalues()
         self.last_state = "420_240_0"
         self.last_action = 0
@@ -77,8 +78,8 @@ class Bot(object):
                 cur_reward = self.r[0]
 
             # Update
-            self.qvalues[state][act] = (1-self.lr) * (self.qvalues[state][act]) + \
-                                       self.lr * ( cur_reward + self.discount*max(self.qvalues[res_state]) )
+            self.qvalues[state][act] = (1-lr_decaying()) * (self.qvalues[state][act]) + \
+                                       lr_decaying() * ( cur_reward + self.discount*max(self.qvalues[res_state]) )
 
             t += 1
 
@@ -117,3 +118,13 @@ class Bot(object):
             json.dump(self.qvalues, fil)
             fil.close()
             print("Q-values updated on local file.")
+    
+    def lr_decaying(self, lr, lr_decay, force=False):
+        """
+        decreases learning rate every dumping_n games
+        """
+        if self.gameCNT % self.DUMPING_N == 0 or force:
+            self.lr = max(self.lr-self.lr_decaying, 0.1)
+            
+        return self.lr
+    
