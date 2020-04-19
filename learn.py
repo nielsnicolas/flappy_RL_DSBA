@@ -210,12 +210,13 @@ def showGameOverScreen(crashInfo):
     if VERBOSE:
         score = crashInfo["score"]
 
-        print(str(bot.gameCNT - 1) + " | " + str(score))
+        print(str(bot.gameCNT - 1) + " | " + str(score) + " | " + str(bot.lr))
 
 
     if bot.gameCNT == (ITERATIONS):
         print('the avegare score is',sum(list_scoring)/bot.gameCNT,'during those',ITERATIONS,'games')
         print('the max score is',max(list_scoring),'during those',ITERATIONS,'games')
+        print(bot.lr)
         #print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i <10),'games scored single-digits-numbers and they represent',(sum(1 for i in list_scoring if i <10)/bot.gameCNT)*100,'%')
         #print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i >=10 and i<100),'games scored 2-digits-numbers and they represent',(sum(1 for i in list_scoring if i >=10 and i<100)/bot.gameCNT)*100,'%')
         #print('during these',ITERATIONS,'games, they were',sum(1 for i in list_scoring if i >=100 and i<1000),'games scored 3-digits-numbers and they represent',(sum(1 for i in list_scoring if i >=100 and i<1000)/bot.gameCNT)*100,'%')

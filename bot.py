@@ -14,6 +14,8 @@ class Bot(object):
         self.discount = 1.0
         self.r = {0: 1, 1: -750, 2:-1000}  # Reward function
         self.lr = 0.8
+        self.lr_decay = 0.005
+        self.lr_min = 0.2
         self.load_qvalues()
         self.last_state = "420_240_0"
         self.last_action = 0
@@ -83,10 +85,14 @@ class Bot(object):
             t += 1
 
         self.gameCNT += 1  # increase game count
+
+
+        if self.gameCNT % 100 == 0 :
+            self.lr = max(self.lr-self.lr_decay,self.lr_min)
+
+
         if dump_qvalues:
             self.dump_qvalues()  # Dump q values (if game count % DUMPING_N == 0)
-        if lr_decaying:
-            self.lr_decaying()
         self.moves = []  # clear history after updating strategies
         
 
