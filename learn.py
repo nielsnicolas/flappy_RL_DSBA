@@ -229,7 +229,7 @@ def showGameOverScreen(crashInfo):
     
         df = pd.DataFrame(dict_for_pd) 
         print(df.tail())
-        df.to_csv('our_results.csv')
+        df.to_csv('our_results_dumping5.csv')
 
         
         x = list(range(bot.gameCNT-1))
