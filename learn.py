@@ -210,7 +210,7 @@ def showGameOverScreen(crashInfo):
     if VERBOSE:
         score = crashInfo["score"]
 
-        print(str(bot.gameCNT - 1) + " | " + str(score) + " | " + str(bot.lr))
+        print(str(bot.gameCNT - 1) + " | " + str(score) + " | " + str(bot.lr) + " | " + str(bot.discount))
 
 
     if bot.gameCNT == (ITERATIONS):
@@ -229,7 +229,7 @@ def showGameOverScreen(crashInfo):
     
         df = pd.DataFrame(dict_for_pd) 
         print(df.tail())
-        df.to_csv('our_results_lr_test.csv')
+        df.to_csv('our_results.csv')
 
         
         x = list(range(bot.gameCNT-1))
