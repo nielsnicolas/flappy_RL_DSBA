@@ -1,54 +1,34 @@
-Flappy Bird Bot using Reinforcement Learning in Python
-===================
-![4000+ scored](http://i.imgur.com/00Mf320.png)
+How to get a four-digit score on Flappy Bird?
+Introduction to Reinforcement Learning
 
-A Flappy Bird bot in Python, that learns from each game played via Q-Learning.
+Ariel Modai - Niels Nicolas 
 
-[Youtube Link](https://www.youtube.com/watch?v=79BWQUN_Njc) 
+#Explanation of the code  
 
-----------
-### Running
+This project was developed on python and is divided into four python scripts:
 
-Only dependency of the project is `pygame`.
+##bot.py : The class of our algorithm
+This file contains the Bot class that applies the Q-Learning logic to the game.
+    
+##flappy.py : the actual visual gameplay 
+Running this code will open a game map and start Flappy Bird games. The Bird is moving according to the Q Values of the Q-table that is inside the `qvalues.json` file.
 
-- `src/flappy.py` - Run to see the actual visual gameplay.
-- `src/learn.py` - Run for faster learning/training. This runs without any pygame visualization, so it's much faster.
-  - The following command-line args are available:
-    - `--verbose` to see `iteration | score` pair printed at each iteration. (Iteration = a bird playing from start until death)
-    - `--iter` number of iterations to run.
-- `src/initialize_qvalues.py` - Run if you want to reset the q-values, so you can observe how the bird learns to play over time.
-- `src/bot.py` - This file contains the `Bot` class that applies the Q-Learning logic to the game.
-
-----------
-### How it works
-
-With every game played, the bird observes the states it has been in, and the actions it took. With regards to their outcomes, it punishes or rewards the state-action pairs. After playing the game numerous times, the bird is able to consistently obtain high scores. 
-
-A reinforcement learning algorithm called [Q-learning](https://en.wikipedia.org/wiki/Q-learning) is utilized. This project is heavily influenced by the [awesome work of sarvagyavaish](http://sarvagyavaish.github.io/FlappyBirdRL/),  but I changed the state space and the algorithm to some extent. The bot is built to operate on a modifed version of the [Flappy Bird pygame clone of sourabhv](https://github.com/sourabhv/FlapPyBird).
-
-----------
-We define the state space and action set, and the bird uses its experiences to give rewards to various state-action pairs.
-
-I defined the states a little different from sarvagyavaish. In his version **horizontal and vertical distances from the next pipe** define the state of the bird. When I wrote the program to work like this, I found that convergence takes a very long time. So I instead discretized the distances to **10x10 grids**, which greatly reduces the state space. Moreover, I added **vertical velocity of the bird** to the state space.
-
-I also changed the algorithm a bit. Instead of updating Q-values with each experience observed, I went backward  after each game played. So, **Q-values are calculated going backwards from the last experience to first**. I figured this would help propagate the “bad state” information faster. In addition if the bird dies by **collapsing to the top-section of a pipe**, the **state where bird jumped** gets flagged and is punished additionally. This works nice, since dying to the top-section of the pipe is almost always the result of a bad jump. The flagging helps propagating the information to this ‘bad’ [s,a] pair quickly.
-
-![Learning Graph](http://i.imgur.com/Xm8WPYk.png)
-
-As it can be seen, after around 1500 game iterations, the bot learns to play quite well, averaging about 150 score, and also occasionally hitting very good max scores.
-
-----------
-### Update
-
-With **5x5 grids** instead of 10x10 (and also **y velocity** still in the state space), the convergence takes longer, but it converges to around 675 score, significantly beating the 150 score of the previous run. Also, the bird is able reach very high scores (3000+) quite many times.
-
-![Learning Graph II](http://i.imgur.com/E3Vy0OR.png)
+##learn.py} : faster learning/training 
+This script is similar to flappy.py, except it runs without any pygame visualization, so it's much faster. We can also track the score obtained after each game, as well as keeping track with the learning rate value (by using the `--verbose` command). 
+    
+##initialize_qvalues.py} - This file resets the q-values : 
+Running this code will clear the qvalues.json file and set the Q-table clear. 
 
 
-**Credits**
+#How to run the code 
 
-https://github.com/sourabhv/FlapPyBird
+The project requires `pygame` 1.9.6.
 
-http://sarvagyavaish.github.io/FlappyBirdRL/
+- 1) place yourself inside your src directory with your terminal. 
+- 2) run `python initialize_qvalues.py` to reset the q-values
+- 3) run `python flappy.py` and observe multiple flappy bird games without training the algorithm first. The bird will usely crash down before even reaching the first pipes. 
+- 4) run `python learn.py --iter XXX --verbose` with XXX being the number of iterations you want to do. We usually did 20000 iterations for our tests. This code will help you train your algorithm way faster, as it doesn't require game visualizations. 
+- 5) run `python flappy.py` one last time, to visualize the bird actually reaching higher scores in the game map ! 
 
-https://github.com/mihaibivol/Q-learning-tic-tac-toe
+Thank you for playing ! 
+________________________

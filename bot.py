@@ -10,11 +10,11 @@ class Bot(object):
 
     def __init__(self):
         self.gameCNT = 0  # Game count of current run, incremented after every death
-        self.DUMPING_N = 5  # Number of iterations to dump Q values to JSON after
+        self.DUMPING_N = 25  # Number of iterations to dump Q values to JSON after
         self.discount = 1
         self.discount_decay = 0
         self.df_min = 0.8
-        self.r = {0: 1, 1:-1000}  # Reward function
+        self.r = {0: 0, 1:-1500}  # Reward function
         self.lr = 0.7
         self.lr_decay = 0
         self.lr_min = 0.2
@@ -89,7 +89,7 @@ class Bot(object):
         self.gameCNT += 1  # increase game count
 
 
-        if self.gameCNT % 100 == 0 :
+        if self.gameCNT % 4000 == 0 :
             self.lr = max(self.lr-self.lr_decay, self.lr_min)
 
         if self.gameCNT % 4000 == 0 :
